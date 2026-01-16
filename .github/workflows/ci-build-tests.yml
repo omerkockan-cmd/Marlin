@@ -1,10 +1,10 @@
 name: Marlin Build MKS TinyBee
 
 on:
-  workflow_dispatch: # Manuel başlatma butonu (Kesinlikle olmalı)
+  workflow_dispatch: # Manuel başlatma butonu
   push:
     branches:
-      - "*" # Tüm branşlarda çalışması için yıldız koyduk
+      - "*" # Tüm branşlarda çalışır
 
 jobs:
   build:
@@ -12,10 +12,10 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # v3'ten v4'e güncellendi
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5 # v4'ten v5'e güncellendi
       with:
         python-version: '3.9'
 
@@ -26,13 +26,13 @@ jobs:
 
     - name: Run Build for MKS TinyBee
       run: |
-        # Kütüphane hatalarını önlemek için önce bağımlılıkları yükle
+        # Önceki kalıntıları temizle ve derle
         pio run -e mks_tinybee --target clean
         pio run -e mks_tinybee
 
     - name: Upload Firmware
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4 # HATAYI ÇÖZEN GÜNCELLEME: v3 yerine v4
       with:
         name: MKS_TinyBee_Firmware
         path: .pio/build/mks_tinybee/firmware.bin
