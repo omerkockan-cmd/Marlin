@@ -1,14 +1,20 @@
-name: Marlin Build (MKS TinyBee)
+name: Marlin Build MKS TinyBee
 
 on:
-  workflow_dispatch: # Bu satır manuel başlatma butonunu ekler
+  workflow_dispatch: # Manuel başlatma butonu sağlar
+  push:
+    branches:
+      - bugfix-2.1.x # Kullandığın branş ismi master veya main ise burayı ona göre değiştir
+    paths:
+      - '**/Configuration.h'
+      - '**/Configuration_adv.h'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Marlin
+    - name: Checkout Code
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -16,17 +22,23 @@ jobs:
       with:
         python-version: '3.9'
 
+    - name: Cache PlatformIO
+      uses: actions/cache@v3
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-platformio
+
     - name: Install PlatformIO
       run: |
         python -m pip install --upgrade pip
-        pip install platformio
+        pip install -U platformio
 
     - name: Run Build for MKS TinyBee
       run: |
-        # Configuration dosyalarının Marlin klasöründe olduğunu varsayar
+        # TinyBee için derleme komutu
         pio run -e mks_tinybee
 
-    - name: Upload Firmware Artifact
+    - name: Upload Firmware
       uses: actions/upload-artifact@v3
       with:
         name: MKS_TinyBee_Firmware
